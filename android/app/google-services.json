@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "685175084238",
+    "project_id": "super-chat-app-ce92d",
+    "storage_bucket": "super-chat-app-ce92d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:685175084238:android:399a8afe83a9f98f69ec9f",
+        "android_client_info": {
+          "package_name": "com.agorachat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0h6Fw7iTugXwHaJ7uYPRkeCRBazsZ1FE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
