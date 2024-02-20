@@ -11,7 +11,7 @@ export default StyleSheet.create({
   SCREEN_TITLE: {
     fontSize: 30,
     alignSelf: 'center',
-    color: '#fff',
+    color: '#000',
   },
   HEADING: {},
   INPUT_BOX: {
@@ -21,6 +21,7 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: '400',
     marginBottom: 10,
+    color: '#000',
   },
   INPUT: {
     borderWidth: 1,
@@ -29,7 +30,7 @@ export default StyleSheet.create({
     paddingHorizontal: 10,
     height: 50,
     fontSize: 16,
-    color: '#fff',
+    color: '#000',
     // width: '100%',
   },
   SECTION_CONTAINER: {
@@ -41,7 +42,7 @@ export default StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
     marginBottom: 10,
-    color: '#fff',
+    color: '#000',
   },
   SECTION_DESCRIPTION: {
     marginTop: 8,

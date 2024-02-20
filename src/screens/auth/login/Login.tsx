@@ -24,18 +24,12 @@ import {storeUserData} from '../../../utils/storage';
 import {loginUser, useUserContext} from '../../../context/Context';
 
 import {
+  getUserFromDatabase,
   loginWithEmailAndPassword,
   registerWithEmailAndPassword,
   updateUserInDatabase,
 } from '../../../database/db';
-
-// import {
-//   IsLoggedIn,
-//   Login as AuthLogin,
-//   MatrixService,
-//   StartClient,
-// } from '../../../matrix-helpers/matrix';
-// import {PrepareSync} from '../../../matrix-helpers/sync';
+import {userModel} from '../../../database/model';
 
 function Login(props) {
   const {store, dispatch} = useUserContext();
@@ -49,23 +43,17 @@ function Login(props) {
   const [load, loadDispatch] = useReducer(loadReducer, initialLoad);
 
   const loginToHomeserver = async (username: string, password: string) => {
-    console.log('THE User', user, Config.CHAT_SERVER_URL);
-    console.log('THE USERNAME', username);
-    console.log('THE PASSWORD', password);
     if (!username || !password) {
       return Alert.alert('Please enter username & password');
     }
 
-    const result = Promise.resolve(
-      loginWithEmailAndPassword(username, password),
-    );
-    console.log('Result', result);
-    console.log('THE RESULT', result);
-    if (result) {
-      // storeUserData(result);
-      loginUser(dispatch, result);
-      return;
+    const result: any = await loginWithEmailAndPassword(username, password);
+
+    if (result && result.code !== 200) {
+      return Alert.alert('Error', result.message);
     }
+
+    return result;
   };
 
   return (
@@ -79,6 +67,7 @@ function Login(props) {
           <TextInput
             style={styles.INPUT}
             placeholder="Email"
+            placeholderTextColor={'#1f1f1f'}
             onChangeText={text => {
               userDispatch({type: 'SET_USERNAME', payload: text});
             }}
@@ -88,7 +77,8 @@ function Login(props) {
           <Text style={styles.LABEL}>Password</Text>
           <TextInput
             style={styles.INPUT}
-            placeholder="Email"
+            placeholder="Password"
+            placeholderTextColor={'#1f1f1f'}
             onChangeText={text => {
               userDispatch({type: 'SET_PASSWORD', payload: text});
             }}

@@ -12,6 +12,7 @@ export default StyleSheet.create({
   SCREEN_TITLE: {
     fontSize: 30,
     alignSelf: 'center',
+    color: '#000',
   },
   HEADING: {},
   INPUT_BOX: {
@@ -24,6 +25,7 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: '400',
     marginBottom: 10,
+    color: '#000',
   },
   INPUT: {
     width: '75%',

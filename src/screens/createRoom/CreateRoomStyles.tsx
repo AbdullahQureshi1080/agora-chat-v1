@@ -29,7 +29,7 @@ export default StyleSheet.create({
     paddingHorizontal: 5,
     height: 40,
     fontSize: 16,
-    color: Colors.text,
+    color: '#000',
   },
   SECTION_CONTAINER: {
     marginTop: 32,
@@ -56,13 +56,13 @@ export default StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
     marginBottom: 10,
-    color: Colors.text,
+    color: '#000',
   },
   SECTION_DESCRIPTION: {
     marginTop: 8,
     fontSize: 18,
     fontWeight: '400',
-    color: Colors.text,
+    color: '#000',
   },
   highlight: {
     fontWeight: '700',

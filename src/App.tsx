@@ -22,10 +22,8 @@ LogBox.ignoreAllLogs(true);
 
 import {getUserFromDatabase} from './database/db';
 import {getUserData, storeUserData} from './utils/storage';
-
-// let matrix = new MatrixService();
-
-// import matrix from './rn-matrix/services/matrix';
+import auth from '@react-native-firebase/auth';
+import {userModel} from './database/model';
 
 const Stack = createStackNavigator();
 
@@ -56,34 +54,25 @@ const AppStack = () => {
 const App = props => {
   const {store, dispatch} = useUserContext();
 
-  console.log('THE STORE ', store);
-  const [userData, setUserData] = useState(null);
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
 
-  const getData = async () => {
-    let userMD = await getUserData();
-    console.log('THE USER MD DATA', userMD);
-    if (userMD) {
-      const user = await getUserFromDatabase(userMD.id);
-      setUserData(user);
-      storeUserData(user);
-    }
-  };
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
 
   useEffect(() => {
-    getData();
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
   }, []);
 
-  useEffect(() => {
-    if (userData) {
-      setLoggedInUser(dispatch, userData);
-      console.log('THE STORAGE DATA', userData);
-      return;
-    }
-  }, [userData]);
+  if (initializing) return <ActivityIndicator size={'large'} />;
 
   return (
     <NavigationContainer>
-      {store && store.isAuthenticated ? <AppStack /> : <AuthStack />}
+      {user ? <AppStack /> : <AuthStack />}
     </NavigationContainer>
   );
 };

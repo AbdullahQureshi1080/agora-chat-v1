@@ -17,15 +17,17 @@ interface button {
   containerStyle?: StyleProp<any>;
   labelStyle?: StyleProp<any>;
   loading?: false;
+  disabled?: false;
 }
 
 export default function Button(props: button) {
-  const {onPress, containerStyle, labelStyle, name, loading} = props;
+  const {onPress, containerStyle, labelStyle, name, loading, disabled} = props;
   return (
     <TouchableOpacity
       {...props}
       style={[styles.CONTAINER, containerStyle]}
-      onPress={onPress}>
+      onPress={onPress}
+      disabled={disabled}>
       {loading ? (
         <ActivityIndicator size={'small'} />
       ) : (

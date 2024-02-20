@@ -4,7 +4,7 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 export default StyleSheet.create({
   AVOIDING_VIEW: {
     flex: 1,
-    backgroundColor: '#000',
+    // backgroundColor: '#000',
     padding: '5%',
   },
   BACKGROUND: {

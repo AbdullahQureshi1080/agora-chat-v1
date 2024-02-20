@@ -25,6 +25,8 @@ import {
   addUserToDatabase,
   registerWithEmailAndPassword,
 } from '../../../database/db';
+import {firebase} from '@react-native-firebase/auth';
+import {userModel} from '../../../database/model';
 
 function Register(props) {
   const {store, dispatch} = useUserContext();
@@ -38,22 +40,20 @@ function Register(props) {
   const [load, loadDispatch] = useReducer(loadReducer, initialLoad);
 
   const loginToHomeserver = async (username: string, password: string) => {
-    console.log('THE USERNAME', username);
-    console.log('THE PASSWORD', password);
     if (!username || !password) {
       return Alert.alert('Please enter username & password');
     }
 
-    const result = Promise.resolve(
-      registerWithEmailAndPassword(username, password),
-    );
-    console.log('Result', result);
-    console.log('THE RESULT', result);
-    if (result) {
-      // storeUserData(result);
-      loginUser(dispatch, result);
-      return;
+    const result: any = await registerWithEmailAndPassword(username, password);
+
+    if (result && result.code !== 200) {
+      return Alert.alert('Error', result.message);
     }
+    const userData = userModel({userId: result?.user?.uid, rooms: []});
+    return addUserToDatabase(userData);
+    // storeUserData(userData);
+    // return loginUser(dispatch, userData);
+    // }
   };
 
   return (
@@ -66,6 +66,7 @@ function Register(props) {
           <TextInput
             style={styles.INPUT}
             placeholder="Username"
+            placeholderTextColor={'#1f1f1f'}
             onChangeText={text => {
               userDispatch({type: 'SET_USERNAME', payload: text});
             }}
@@ -75,7 +76,8 @@ function Register(props) {
           <Text style={styles.LABEL}>Password</Text>
           <TextInput
             style={styles.INPUT}
-            placeholder="Email"
+            placeholder="Password"
+            placeholderTextColor={'#1f1f1f'}
             onChangeText={text => {
               userDispatch({type: 'SET_PASSWORD', payload: text});
             }}
@@ -86,12 +88,13 @@ function Register(props) {
         name={load.loading ? 'Loading' : 'Register'}
         onPress={() => loginToHomeserver(user.username, user.password)}
         disabled={load.loading}
+        loading={load.loading}
       />
       <Button
         name={load.loading ? 'Loading' : 'Back to Login'}
         onPress={() => navigation.navigate('Login')}
         disabled={load.loading}
-        containerStyle={{backgroundColor: '000'}}
+        containerStyle={{backgroundColor: '#1a1a1a'}}
       />
     </Screen>
   );

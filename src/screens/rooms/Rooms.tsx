@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   StyleSheet,
   Text,
@@ -25,13 +26,14 @@ import {
   signOut,
   updateUserInDatabase,
 } from '../../database/db';
+import {firebase} from '@react-native-firebase/auth';
 
 export default function Rooms({navigation}) {
   const {store, dispatch} = useUserContext();
 
   const [rooms, setRooms] = useState([]);
 
-  const [user, setUser] = useState({id: ''});
+  const [user, setUser] = useState();
 
   const [loading, setLoading] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -47,24 +49,19 @@ export default function Rooms({navigation}) {
 
   // const [emojies, setEmojies] = useState([]);
 
-  const getUsers = async () => {
-    const users = await getAllUsersFromDatabase();
-    const currentUser = await getUserData();
-    console.log('getUsers:users:currentUsers', users, currentUser);
-    const user = users.filter(us => us.userId == currentUser.userId)[0];
-    console.log('getUsers:User', user);
-    if (user && !currentUser.id) {
-      console.log('User updated!');
-      storeUserData(user);
-      return updateUserInDatabase(user);
-    }
-    setUser(user);
-    console.log('User already updated!');
+  const getUser = async () => {
+    const firebaseUser = firebase.auth().currentUser;
+    console.log('Rooms: getUser', firebaseUser?.email);
+    const userData = {
+      email: firebaseUser?.email,
+      userId: firebaseUser?.uid,
+    };
+    setUser(userData);
   };
 
   useEffect(() => {
     setLoading(true);
-    getUsers();
+    getUser();
     getRooms();
   }, []);
 
@@ -91,10 +88,10 @@ export default function Rooms({navigation}) {
   };
 
   const onPressLogout = async () => {
-    removeUserData();
+    await removeUserData();
     signOut();
-    logoutUser(dispatch);
-    alert('All data cleared.');
+    await logoutUser(dispatch);
+    Alert.alert('All data cleared.');
   };
 
   const renderItem = ({item, inde}) => {
@@ -122,9 +119,13 @@ export default function Rooms({navigation}) {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginHorizontal: 20,
+          // marginHorizontal: 20,
         }}>
-        <Text style={styles.SCREEN_TITLE}>AGORA CHAT</Text>
+        <View>
+          <Text style={styles.SCREEN_TITLE}>AGORA CHAT</Text>
+          <Text style={styles.LABEL}>{user?.email}</Text>
+          <Text style={{...styles.LABEL, fontSize: 12}}>{user?.userId}</Text>
+        </View>
 
         <TouchableOpacity
           onPress={() => {

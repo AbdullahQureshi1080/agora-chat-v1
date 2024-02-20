@@ -52,59 +52,88 @@ firestore()
   .collection('Users')
   .onSnapshot(onResult as any, onError as any);
 
-export const registerWithEmailAndPassword = (
+export const registerWithEmailAndPassword = async (
   email: string,
   password: string,
 ) => {
-  auth()
-    .createUserWithEmailAndPassword(email, password)
-    .then(() => {
+  try {
+    const createUser = await auth().createUserWithEmailAndPassword(
+      email,
+      password,
+    );
+    if (createUser && createUser.user) {
       console.log(
-        'Firebase: registerWithEmailAndPassword -> User account created & signed in!',
+        'Firebase: registerWithEmailAndPassword -> createUser',
+        createUser.user,
+        createUser.additionalUserInfo,
+      );
+      return createUser;
+    }
+  } catch (error: any) {
+    if (error.code === 'auth/email-already-in-use') {
+      console.log(
+        'Firebase: registerWithEmailAndPassword -> That email address is already in use!',
       );
       return {
-        message: 'User created',
-        code: 200,
+        message: 'auth/email-already-in-use',
+        code: 409,
       };
-    })
-    .catch(error => {
-      if (error.code === 'auth/email-already-in-use') {
-        console.log(
-          'Firebase: registerWithEmailAndPassword -> That email address is already in use!',
-        );
-        return {
-          message: 'auth/email-already-in-use',
-          code: 409,
-        };
-      }
-      if (error.code === 'auth/invalid-email') {
-        console.log(
-          'Firebase: registerWithEmailAndPassword -> That email address is invalid!',
-        );
-        return {
-          message: 'auth/invalid-email',
-          code: 409,
-        };
-      }
-      console.error(error);
-    });
+    }
+    if (error.code === 'auth/invalid-email') {
+      console.log(
+        'Firebase: registerWithEmailAndPassword -> That email address is invalid!',
+      );
+      return {
+        message: 'auth/invalid-email',
+        code: 400,
+      };
+    }
+    console.error(error);
+    return {
+      message: error,
+      code: 400,
+    };
+  }
 };
 
-export const loginWithEmailAndPassword = (email: string, password: string) => {
-  auth()
-    .signInWithEmailAndPassword(email, password)
-    .then(() => {
+export const loginWithEmailAndPassword = async (
+  email: string,
+  password: string,
+) => {
+  try {
+    const userLogin = await auth().signInWithEmailAndPassword(email, password);
+    if (userLogin && userLogin.user) {
       console.log(
-        'Firebase: loginWithEmailAndPassword -> User account logged in!',
+        'Firebase: loginWithEmailAndPassword -> userLogin',
+        userLogin,
       );
+      return userLogin;
+    }
+  } catch (error: any) {
+    if (error.code === 'auth/invalid-email') {
       return {
-        message: 'logged In',
-        code: 200,
+        message: 'auth/invalid-email',
+        code: 400,
       };
-    })
-    .catch(error => {
-      console.error(error);
-    });
+    }
+    if (error.code === 'auth/wrong-password ') {
+      return {
+        message: 'auth/email or password is wrong',
+        code: 400,
+      };
+    }
+    if (error.code === 'auth/auth/user-not-found ') {
+      return {
+        message: 'auth/user-not-found',
+        code: 400,
+      };
+    }
+    console.error(error);
+    return {
+      message: error,
+      code: 400,
+    };
+  }
 };
 
 export const signOut = () => {
