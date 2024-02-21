@@ -49,7 +49,11 @@ function Register(props) {
     if (result && result.code !== 200) {
       return Alert.alert('Error', result.message);
     }
-    const userData = userModel({userId: result?.user?.uid, rooms: []});
+    const userData = userModel({
+      userId: result?.user?.uid,
+      rooms: [],
+      email: username,
+    });
     return addUserToDatabase(userData);
     // storeUserData(userData);
     // return loginUser(dispatch, userData);

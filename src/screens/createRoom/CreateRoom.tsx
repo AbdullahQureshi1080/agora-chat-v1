@@ -18,6 +18,15 @@ import styles from './CreateRoomStyles';
 import {useNavigation} from '@react-navigation/native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import Button from '../../components/button/Button';
+import Screen from '../../components/screen/Screen';
+import {
+  addUserToDatabase,
+  getAllUsersFromDatabase,
+  getUserFromDatabase,
+  updateUserInDatabase,
+} from '../../database/db';
+import {createSession} from '../../services/service';
+import {firebase} from '@react-native-firebase/auth';
 
 function CreateRoom({isVisible, setIsVisible, callbackRoom}) {
   const [roomData, setRoomData] = useState({});
@@ -31,40 +40,35 @@ function CreateRoom({isVisible, setIsVisible, callbackRoom}) {
   const navigation = useNavigation();
   const isDarkMode = useColorScheme() === 'dark';
 
-  const onPressCreateRoom = () => {
-    const getMembers = [...selectedUsers];
-    let members = [`@${query}:localhost`];
-    if (getMembers.length) {
-      members = getMembers.map(m => m.userId);
-    }
-    console.log('Members', members);
-
+  const onPressCreateRoom = async () => {
+    const userId = firebase.auth().currentUser?.uid;
     // Use to create a new room
     const opts = {
       name: roomData.name,
-      members: members,
-      enableEncryption: true,
-      visibility: 'private',
-      topic: 'Random',
-      callbackRoom: callbackRoom,
+      userId: userId,
+      participants: [...selectedUsers.map(u => u.userId)],
     };
     console.log('OPTS', opts);
-    ChatService.createRoom(opts);
+    const createRoom = await createSession(opts);
+    console.log("room created!",createRoom)
     setIsVisible(false);
     setRoomData({});
   };
 
   const getUsers = async () => {
-    // if (users.length == 0) {
+    setShowSuggestions(true);
+    const users = await getAllUsersFromDatabase();
+    console.log('CreateRoom: getUsers', users);
     let results = [...users];
-    results = await ChatService.searchUsers(query);
+
     console.log('ServerUsers', results);
-    const filtersUsers = results.filter(user =>
-      user?.userId?.startsWith(query),
+    const filtersUsers = results.filter(
+      user =>
+        user?.email?.includes(query) &&
+        user.userId !== firebase.auth().currentUser?.uid,
     );
     console.log('FIlter Users', filtersUsers);
     setUsers(filtersUsers);
-    setShowSuggestions(true);
   };
 
   const renderItem = ({item, index}) => {
@@ -76,16 +80,19 @@ function CreateRoom({isVisible, setIsVisible, callbackRoom}) {
             return alert('User already selected');
           }
           setSelectedUsers([...selectedUsers, item]);
+          setUsers([]);
+          setQuery('');
+          setShowSuggestions(false);
         }}>
-        <Text style={styles.LABEL}>{item.userId}</Text>
+        <Text style={styles.LABEL}>{item.email}</Text>
       </TouchableOpacity>
     );
   };
 
   const renderItemselected = ({item, index}) => {
     return (
-      <View style={styles.LIST_USER}>
-        <Text style={styles.LABEL}>{item.userId}</Text>
+      <View style={{...styles.LIST_USER, backgroundColor: '#9BCF53'}}>
+        <Text style={styles.LABEL}>{item.email}</Text>
         <Text
           style={styles.LABEL}
           onPress={() => {
@@ -104,71 +111,74 @@ function CreateRoom({isVisible, setIsVisible, callbackRoom}) {
 
   return (
     <Modal visible={isVisible}>
-      <View style={{flex: 1}}>
-        <Text style={styles.SCREEN_TITLE}>Room Creation</Text>
-        <View style={styles.SECTION_CONTAINER}>
-          <Text style={styles.LABEL}>Name</Text>
-          <TextInput
-            style={styles.INPUT}
-            placeholder="Name"
-            onChangeText={text => {
-              setRoomData({
-                ...roomData,
-                name: text,
-              });
-            }}
-          />
-          <Text style={styles.LABEL}>Add User to Room</Text>
-          <TextInput
-            style={styles.INPUT}
-            placeholder="Username"
-            onChangeText={text => {
-              getUsers(text?.toLowerCase());
-              setQuery(text);
-            }}
-          />
-        </View>
-
-        {selectedUsers && selectedUsers.length ? (
-          <View style={styles.SECTION_CONTAINER_SELECTED_LIST}>
-            <FlatList
-              data={users}
-              renderItem={renderItemselected}
-              keyExtractor={(item, index) => index.toString()}
+      <Screen isBack={false} navigation={navigation}>
+        <View style={{flex: 1}}>
+          <Text style={styles.SCREEN_TITLE}>Room Creation</Text>
+          <View style={styles.SECTION_CONTAINER}>
+            <Button
+              name={'Close'}
+              onPress={() => {
+                setRoomData({});
+                setQuery('');
+                setUsers([]);
+                setSelectedUsers([]);
+                setIsVisible(false);
+              }}
+              containerStyle={{
+                backgroundColor: '#1e1e1e',
+                width: '20%',
+              }}
+            />
+            <Text style={styles.LABEL}>Name</Text>
+            <TextInput
+              style={styles.INPUT}
+              placeholder="Name"
+              onChangeText={text => {
+                setRoomData({
+                  ...roomData,
+                  name: text,
+                });
+              }}
+            />
+            <Text style={styles.LABEL}>Add User to Room</Text>
+            <TextInput
+              style={styles.INPUT}
+              placeholder="Username"
+              onChangeText={text => {
+                getUsers(text?.toLowerCase());
+                setQuery(text);
+              }}
             />
           </View>
-        ) : null}
-        {users && users.length && showSuggestions ? (
-          <View style={styles.SECTION_CONTAINER_LIST}>
-            <FlatList
-              data={selectedUsers}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
-            />
-          </View>
-        ) : null}
 
-        <View style={styles.SECTION_CONTAINER}>
+          {selectedUsers && selectedUsers.length ? (
+            <View style={styles.SECTION_CONTAINER_SELECTED_LIST}>
+              <FlatList
+                data={selectedUsers}
+                renderItem={renderItemselected}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
+          ) : null}
+          {users && users.length && showSuggestions ? (
+            <View style={styles.SECTION_CONTAINER_LIST}>
+              <FlatList
+                data={users}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
+          ) : null}
+
           <Button
             name={'Create Room'}
             onPress={() => {
               onPressCreateRoom();
             }}
-            containerStyle={{backgroundColor: '000'}}
-            labelStyle={{color: Colors.text}}
+            labelStyle={{color: '#fff'}}
           />
         </View>
-      </View>
-      <Button
-        name={'Close'}
-        onPress={() => {
-          setRoomData({});
-          setQuery('');
-          setUsers([]);
-          setSelectedUsers([]);
-          setIsVisible(false);
-        }}
-      />
+      </Screen>
     </Modal>
   );
 }

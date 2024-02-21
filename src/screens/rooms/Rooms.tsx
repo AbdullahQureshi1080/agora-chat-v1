@@ -57,31 +57,24 @@ export default function Rooms({navigation}) {
       userId: firebaseUser?.uid,
     };
     setUser(userData);
+    getRooms(userData.userId);
   };
 
   useEffect(() => {
     setLoading(true);
     getUser();
-    getRooms();
   }, []);
 
-  const getRooms = async () => {
-    //   setFetchingRooms(true);
+  const getRooms = async (userId: string) => {
+    setFetchingRooms(true);
+    const dbUser = await getUserFromDatabase(userId);
+    console.log('USER IS ', dbUser);
+    const rooms = dbUser?.rooms;
+    console.log('USER ROOMS', rooms);
+    setRooms(rooms);
     setLoading(false);
-    //   let rooms = await ChatService.getAllRooms(null);
-    //   console.log('THE ROOMS', rooms);
-    //   if (rooms) {
-    //     setRooms(rooms);
-    //   }
-    // setLoading(false);
-    //   setFetchingRooms(false);
+    setFetchingRooms(false);
   };
-
-  useEffect(() => {
-    if (rooms.length) {
-      console.log('THE ROOMS: ROOMS', rooms);
-    }
-  }, [rooms]);
 
   const onRowPress = item => {
     navigation.navigate('Room', {room: item});
@@ -94,13 +87,16 @@ export default function Rooms({navigation}) {
     Alert.alert('All data cleared.');
   };
 
-  const renderItem = ({item, inde}) => {
+  const renderItem = ({item, index}) => {
     const room = item;
     let roomName = room.name;
+    let roomParticipants = room.participants;
     return (
       <TouchableOpacity style={styles.ROOM} onPress={() => onRowPress(item)}>
         <Text style={styles.ROOM_NAME}>{roomName}</Text>
-        {/* <Text style={styles.ROOM_MESSAGE}>{lastMessage}</Text> */}
+        <Text style={styles.ROOM_MESSAGE}>{`${roomParticipants?.map(
+          u => u,
+        )}`}</Text>
       </TouchableOpacity>
     );
   };
@@ -129,7 +125,7 @@ export default function Rooms({navigation}) {
 
         <TouchableOpacity
           onPress={() => {
-            getRooms();
+            getRooms(user?.userId);
           }}>
           <Text style={styles.ROOM_MESSAGE}>Refresh</Text>
         </TouchableOpacity>
@@ -137,7 +133,7 @@ export default function Rooms({navigation}) {
 
       {loading ? (
         <View style={{justifyContent: 'center', alignItems: 'center'}}>
-          <ActivityIndicator size={'large'} color={'000'} />
+          <ActivityIndicator size={'large'} color={'#000'} />
           {loggingOut ? (
             <Text style={styles.LABEL}>Logging out......</Text>
           ) : null}
@@ -148,6 +144,11 @@ export default function Rooms({navigation}) {
       ) : (
         <>
           <Button name={'Create Room'} onPress={() => setIsRoomVisible(true)} />
+          {!fetchingRooms && rooms?.length == 0 ? (
+            <Text style={{color: '#000', alignSelf: 'center'}}>
+              No rooms for the users
+            </Text>
+          ) : null}
           <FlatList
             data={rooms}
             renderItem={renderItem}
@@ -157,7 +158,11 @@ export default function Rooms({navigation}) {
       )}
 
       {loggingOut ? null : (
-        <Button name={'Logout'} onPress={() => onPressLogout()} />
+        <Button
+          name={'Logout'}
+          onPress={() => onPressLogout()}
+          containerStyle={{position: 'absolute', bottom: 15}}
+        />
       )}
 
       {isRoomVisible && (

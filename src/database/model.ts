@@ -3,6 +3,7 @@ export const userModel = (data: any) => {
     const user = {
       userId: data.userId,
       rooms: data.rooms,
+      email: data.email,
     };
     return user;
   }

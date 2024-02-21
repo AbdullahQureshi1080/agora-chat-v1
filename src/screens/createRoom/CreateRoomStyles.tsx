@@ -12,6 +12,7 @@ export default StyleSheet.create({
   SCREEN_TITLE: {
     fontSize: 30,
     alignSelf: 'center',
+    color: '#000',
   },
   HEADING: {},
   INPUT_BOX: {
@@ -19,8 +20,9 @@ export default StyleSheet.create({
   },
   LABEL: {
     fontSize: 16,
-    fontWeight: '400',
+    fontWeight: '600',
     marginBottom: 10,
+    color: '#000',
   },
   INPUT: {
     borderWidth: 1,
@@ -33,24 +35,30 @@ export default StyleSheet.create({
   },
   SECTION_CONTAINER: {
     marginTop: 32,
-    paddingHorizontal: 24,
+    marginBottom: 20,
+    // paddingHorizontal: 24,
+    // backgroundColor: 'red',
   },
 
   SECTION_CONTAINER_LIST: {
     marginTop: 32,
-    marginHorizontal: 24,
+    // marginHorizontal: 24,
     borderRadius: 8,
-    height: 200,
-    backgroundColor: Colors.grey,
+    marginBottom: 20,
+    // height: 200,
+    // backgroundColor: Colors.grey,
+    // backgroundColor: 'red',
     // paddingHorizontal: 20,
     // paddingVertical: 20,
   },
   SECTION_CONTAINER_SELECTED_LIST: {
-    marginTop: 32,
-    marginHorizontal: 24,
+    marginTop: 10,
+    // marginHorizontal: 24,
     borderRadius: 8,
-    height: 200,
-    backgroundColor: Colors.primary,
+    marginBottom: 20,
+    // height: 200,
+    backgroundColor: '#fafafaf',
+    // backgroundColor: 'red',
   },
   SECTION_TITLE: {
     fontSize: 24,
@@ -75,7 +83,7 @@ export default StyleSheet.create({
   },
   LIST_USER: {
     flexDirection: 'row',
-    backgroundColor: Colors.chat,
+    // backgroundColor: Colors.chat,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderTopEndRadius: 8,
@@ -83,5 +91,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     marginVertical: 2,
     justifyContent: 'space-between',
+    color: '#000',
+    backgroundColor: '#e6e6e6',
   },
 });

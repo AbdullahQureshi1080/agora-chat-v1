@@ -5,12 +5,10 @@ import firestore, {
 import auth, {firebase} from '@react-native-firebase/auth';
 
 export const addUserToDatabase = (user: any) => {
-  firestore()
-    .collection('Users')
-    .add(user)
-    .then(res => {
-      console.log(`User added! ${JSON.stringify(user)}`);
-    });
+  const record = firestore().collection('Users').doc(user.userId);
+  record.set(user).then(res => {
+    console.log(`User added! ${JSON.stringify(user)}`);
+  });
 };
 
 export const updateUserInDatabase = (user: any) => {
@@ -34,6 +32,7 @@ export const getAllUsersFromDatabase = async () => {
 
 export const getUserFromDatabase = async (id: string) => {
   const user = await firestore().collection('Users').doc(id).get();
+  // console.log('User from database', user);
   const extractUser = {...user.data(), id: user.id};
   console.log('User from database', extractUser);
   return extractUser;
@@ -67,7 +66,7 @@ export const registerWithEmailAndPassword = async (
         createUser.user,
         createUser.additionalUserInfo,
       );
-      return createUser;
+      return {...createUser, message: 'User loggedIn', code: 200};
     }
   } catch (error: any) {
     if (error.code === 'auth/email-already-in-use') {
@@ -107,7 +106,7 @@ export const loginWithEmailAndPassword = async (
         'Firebase: loginWithEmailAndPassword -> userLogin',
         userLogin,
       );
-      return userLogin;
+      return {...userLogin, message: 'User logged In', code: 200};
     }
   } catch (error: any) {
     if (error.code === 'auth/invalid-email') {
