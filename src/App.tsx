@@ -24,6 +24,7 @@ import {getUserFromDatabase} from './database/db';
 import {getUserData, storeUserData} from './utils/storage';
 import auth from '@react-native-firebase/auth';
 import {userModel} from './database/model';
+import AgoraVideo from './screens/interaction/video/AgoraVideo';
 
 const Stack = createStackNavigator();
 
@@ -47,6 +48,7 @@ const AppStack = () => {
       }}>
       <Stack.Screen name="Rooms" component={Rooms} />
       <Stack.Screen name="Room" component={Room} />
+      <Stack.Screen name="Video" component={AgoraVideo} />
     </Stack.Navigator>
   );
 };

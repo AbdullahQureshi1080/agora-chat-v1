@@ -58,6 +58,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   ROOM: {
+    marginVertical: 10,
     paddingHorizontal: 15,
     // height: 100,
     // backgroundColor: '#8CB9BD',

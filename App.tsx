@@ -8,7 +8,7 @@ import {
   RtcSurfaceView,
   ChannelProfileType,
 } from 'react-native-agora';
-import {AppConfig} from './Config';
+import {AppConfig} from './src/Config';
 
 const appId = AppConfig.APP_ID;
 const channelName = 'super-chat-test';

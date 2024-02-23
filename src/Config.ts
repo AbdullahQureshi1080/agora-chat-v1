@@ -4,3 +4,5 @@ export const AppConfig = {
   APP_ID: Config.APP_ID,
   TOKEN: Config.TOKEN,
 };
+
+console.log('APP CONFIG', AppConfig);

@@ -27,6 +27,7 @@ import {
 } from '../../../database/db';
 import {firebase} from '@react-native-firebase/auth';
 import {userModel} from '../../../database/model';
+import {getCurrentTimeUid} from '../../../utils/helpers';
 
 function Register(props) {
   const {store, dispatch} = useUserContext();
@@ -53,6 +54,7 @@ function Register(props) {
       userId: result?.user?.uid,
       rooms: [],
       email: username,
+      uid: getCurrentTimeUid(),
     });
     return addUserToDatabase(userData);
     // storeUserData(userData);

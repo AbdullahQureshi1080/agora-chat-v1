@@ -56,7 +56,7 @@ export default function Rooms({navigation}) {
       email: firebaseUser?.email,
       userId: firebaseUser?.uid,
     };
-    setUser(userData);
+    // setUser(userData);
     getRooms(userData.userId);
   };
 
@@ -71,13 +71,16 @@ export default function Rooms({navigation}) {
     console.log('USER IS ', dbUser);
     const rooms = dbUser?.rooms;
     console.log('USER ROOMS', rooms);
+    setUser(dbUser);
     setRooms(rooms);
     setLoading(false);
     setFetchingRooms(false);
   };
 
   const onRowPress = item => {
-    navigation.navigate('Room', {room: item});
+    navigation.navigate('Video', {
+      room: {...item, channelAccessId: user?.channelAccessId},
+    });
   };
 
   const onPressLogout = async () => {
@@ -89,14 +92,15 @@ export default function Rooms({navigation}) {
 
   const renderItem = ({item, index}) => {
     const room = item;
-    let roomName = room.name;
+    let roomName = room.channelName;
     let roomParticipants = room.participants;
+    let particpantId = room?.participantId;
+    let createrId = room?.roomCreatorId;
     return (
       <TouchableOpacity style={styles.ROOM} onPress={() => onRowPress(item)}>
         <Text style={styles.ROOM_NAME}>{roomName}</Text>
-        <Text style={styles.ROOM_MESSAGE}>{`${roomParticipants?.map(
-          u => u,
-        )}`}</Text>
+        <Text style={styles.ROOM_MESSAGE}>Participant Id: {particpantId}</Text>
+        <Text style={styles.ROOM_MESSAGE}>Creater Id: {createrId}</Text>
       </TouchableOpacity>
     );
   };
@@ -161,7 +165,7 @@ export default function Rooms({navigation}) {
         <Button
           name={'Logout'}
           onPress={() => onPressLogout()}
-          containerStyle={{position: 'absolute', bottom: 15}}
+          // containerStyle={{position: 'absolute', bottom: 15}}
         />
       )}
 

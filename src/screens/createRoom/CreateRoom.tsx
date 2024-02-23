@@ -25,7 +25,12 @@ import {
   getUserFromDatabase,
   updateUserInDatabase,
 } from '../../database/db';
-import {createSession} from '../../services/service';
+import {
+  createGroupSession,
+  createRoomSession,
+  createSession,
+  createSingleSession,
+} from '../../services/service';
 import {firebase} from '@react-native-firebase/auth';
 
 function CreateRoom({isVisible, setIsVisible, callbackRoom}) {
@@ -42,15 +47,17 @@ function CreateRoom({isVisible, setIsVisible, callbackRoom}) {
 
   const onPressCreateRoom = async () => {
     const userId = firebase.auth().currentUser?.uid;
+    const dbUser = await getUserFromDatabase(userId);
     // Use to create a new room
     const opts = {
       name: roomData.name,
       userId: userId,
       participants: [...selectedUsers.map(u => u.userId)],
+      channelAccessId: dbUser?.channelAccessId,
     };
     console.log('OPTS', opts);
-    const createRoom = await createSession(opts);
-    console.log("room created!",createRoom)
+    const createRoom = await createRoomSession(opts);
+    console.log('room created!', createRoom);
     setIsVisible(false);
     setRoomData({});
   };
