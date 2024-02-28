@@ -25,6 +25,7 @@ import {getUserData, storeUserData} from './utils/storage';
 import auth from '@react-native-firebase/auth';
 import {userModel} from './database/model';
 import AgoraVideo from './screens/interaction/video/AgoraVideo';
+import AgoraAudio from './screens/interaction/Audio/AgoraAudio';
 
 const Stack = createStackNavigator();
 
@@ -49,13 +50,12 @@ const AppStack = () => {
       <Stack.Screen name="Rooms" component={Rooms} />
       <Stack.Screen name="Room" component={Room} />
       <Stack.Screen name="Video" component={AgoraVideo} />
+      <Stack.Screen name="Audio" component={AgoraAudio} />
     </Stack.Navigator>
   );
 };
 
-const App = props => {
-  const {store, dispatch} = useUserContext();
-
+const App = (props: any) => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
 

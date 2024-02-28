@@ -29,11 +29,10 @@ import {
 import {firebase} from '@react-native-firebase/auth';
 
 export default function Rooms({navigation}) {
-  const {store, dispatch} = useUserContext();
-
   const [rooms, setRooms] = useState([]);
 
   const [user, setUser] = useState();
+  const [userId, setUserId] = useState();
 
   const [loading, setLoading] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
@@ -57,7 +56,8 @@ export default function Rooms({navigation}) {
       userId: firebaseUser?.uid,
     };
     // setUser(userData);
-    getRooms(userData.userId);
+    setUserId(userData.userId as any);
+    getRooms(userData.userId as any);
   };
 
   useEffect(() => {
@@ -71,14 +71,14 @@ export default function Rooms({navigation}) {
     console.log('USER IS ', dbUser);
     const rooms = dbUser?.rooms;
     console.log('USER ROOMS', rooms);
-    setUser(dbUser);
+    setUser(dbUser as any);
     setRooms(rooms);
     setLoading(false);
     setFetchingRooms(false);
   };
 
   const onRowPress = item => {
-    navigation.navigate('Video', {
+    navigation.navigate('Audio', {
       room: {...item, channelAccessId: user?.channelAccessId},
     });
   };
@@ -86,7 +86,7 @@ export default function Rooms({navigation}) {
   const onPressLogout = async () => {
     await removeUserData();
     signOut();
-    await logoutUser(dispatch);
+    // await logoutUser(dispatch);
     Alert.alert('All data cleared.');
   };
 
