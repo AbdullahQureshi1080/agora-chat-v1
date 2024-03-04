@@ -78,7 +78,7 @@ export default function Rooms({navigation}) {
   };
 
   const onRowPress = item => {
-    navigation.navigate('Audio', {
+    navigation.navigate('Video', {
       room: {...item, channelAccessId: user?.channelAccessId},
     });
   };

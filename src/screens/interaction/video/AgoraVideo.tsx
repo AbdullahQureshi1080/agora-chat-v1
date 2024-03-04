@@ -15,7 +15,9 @@ import {
   IRtcEngine,
   RtcSurfaceView,
   ChannelProfileType,
+  EncryptionMode,
 } from 'react-native-agora';
+// import {EncryptionMode} from 'react-native-agora-rtc-ng';
 
 import AgoraUIKit from 'agora-rn-uikit';
 
@@ -33,12 +35,21 @@ export default function AgoraVideo({route}) {
   const fUserId = firebase.auth().currentUser;
   const {params} = route;
 
+  const encryption = {
+    key: '3e84f5e40d43b74cfffdcc32f1c1055821ee878b1500ed376a152d0deda92d9d',
+    salt: 'TAfwdGaWrBPnpMEyeB0lFwU1PS2FV5ZhKHBBR0u4asI=',
+  };
+
   const [videoCall, setVideoCall] = useState(false);
   const connectionData = {
     appId: appId,
     channel: params?.room?.channelName,
     token: params?.room?.token,
     uid: params?.room?.channelAccessId,
+    // encryption: {
+    //   key: 'A',
+    //   salt: 'B',
+    // },
   };
 
   const callbacks = {
@@ -105,7 +116,14 @@ export default function AgoraVideo({route}) {
         appId: appId,
         channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       });
+      let encryptionConfig = {
+        encryptionBase64: encryption.salt,
+        encryptionKey: encryption.key,
+        encryptionMode: EncryptionMode.Aes128Ecb,
+      };
+      agoraEngine.enableEncryption(true, {});
       agoraEngine.enableVideo();
+      // agoraEngine.enableAudio();
     } catch (e) {
       console.log(e);
     }
@@ -170,7 +188,7 @@ export default function AgoraVideo({route}) {
         <AgoraUIKit
           connectionData={connectionData}
           rtcCallbacks={callbacks}
-
+          // rtmCallbacks={callbacks}
           // styleProps={}
         />
       ) : (
